@@ -8,19 +8,25 @@ As of commit #15, this module does not exactly duplicate the standard [`collecti
 * O(1) reversal time with the `reverse` method. The standard [`collections.deque.reverse`](https://docs.python.org/3/library/collections.html#collections.deque.reverse) is O(n) for _n_ elements, while this module doesn't particularly care which way is up and will simply do a handstand to look at your data in the other direction rather than shuffling values around.
 * The `remove` method has an additional optional argument `count` for the number of removals to perform, defaulting to 1. When `count` is positive, `count` items are removed, starting from the beginning of the deque. When `count` is negative, it starts from the end of the deque and proceeds backwards. When `count` is 0, all matching items are removed.
 * The `replace` method works similarly to `str.replace`, with an optional `count` argument for the number of items to replace. A positive `count` starts from the beginning, a negative `count` starts from the end, and a `count` of 0 replaces all matching items.
-* The `plus` method (aliases: `p`, `concatenate`, `concat`, `c`) is a replacement for the standard [`collections.deque`](https://docs.python.org/3/library/collections.html#collections.deque) concatenation that would use `+` (which performs vector addition in this module). It calls `extend` and then returns the deque back, for convenient method chaining.
+* Concatenation is now performed via instance calls (the `__call__` special method). This is a replacement for the standard [`collections.deque`](https://docs.python.org/3/library/collections.html#collections.deque) concatenation that would use `+` (which performs vector addition in this module). It sends every passed object to `extend` and then returns the deque back, for convenient chaining. This method has the following aliases, but they are not connected to call syntax and must be manually invoked: `plus`, `p`, `concatenate`, `concat`, `c`.
 
 For example:
 
-    d = deque.DQ('123').plus(deque.DQ('456')).plus(deque.DQ('789'))
+    d = deque.DQ('123')('456', '789')
     d == deque.DQ('123456789') -> True
 
-Note that the first deque in the chain is mutated, so after e.g.
+Note that the first deque in the chain is mutated, so this:
 
     d = save = deque.DQ('123')
-    e = d.plus('456')
+    e = d('456')
 
-we would have
+is equivalent to this:
+
+    d = save = deque.DQ('123')
+    d('456')
+    e = d
+
+resulting either way in this:
 
     save is d is e -> True
     d == e == deque.DQ('123456') -> True
@@ -29,10 +35,14 @@ we would have
 
 For example:
 
-    deque.DQ([1, 2, 3]) + deque.DQ([4, 5, 6])
-    -> deque.DQ([5, 7, 9])
-    deque.DQ([1, 2, 3]) * deque.DQ([4, 5, 6])
-    -> deque.DQ([4, 10, 18])
+    deque.DQ([1, 2, 3]) + (0.5,)*3
+    -> deque.DQ([1.5, 2.5, 3.5])
+    'abc' * deque.DQ([1, 2, 3])
+    -> deque.DQ(['a', 'bb', 'ccc'])
+    deque.DQ([1]) / (3,)
+    -> deque.DQ([0.3333333333333333])
+    (1,) / deque.DQ([3])
+    -> deque.DQ([0.3333333333333333])
     
 * Matrix multiplication via the `@` operator.
 
