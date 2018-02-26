@@ -71,7 +71,6 @@ There are a few methods primarily intended for internal use, but which are still
 * `_neighbors`
 * `_slice`
 * `_getsetdel`
-* `_getsetdel`
 * `_remove_node`
 * `_insert_after`
 * `_insert_before`
