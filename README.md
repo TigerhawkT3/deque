@@ -59,14 +59,17 @@ For example:
 
 When the maximum dimension of both matrices exceeds the threshold set by the `invoke_mp` attribute (default 150) of the left operand (or right operand, if the left operand is of a different but supported class, like a list), the task will be distributed among all available CPU cores. Smaller problem sets are more quickly solved without the overhead of multiprocessing. This threshold is suited to square matrices of small integers, so it's advisable to reduce the threshold for small matrices containing large values.
 
-## Internal methods
-There are a few methods primarily intended for internal use, but which are still accessible. Use the built-in function `help()` for documentation.
+## Helper methods
+There are two methods that are used internally but might also be handy functions at some point, and they don't affect internal data, so feel free to try them out. Use the built-in function `help()` for documentation.
 
 * `distance_to_index`
 * `norm_index`
+
+## Internal methods
+There are a few methods primarily intended for internal use, but which are still accessible. Use the built-in function `help()` for documentation.
+
 * `_neighbors`
 * `_slice`
-* `_getsetdel`
 * `_getsetdel`
 * `_remove_node`
 * `_insert_after`
@@ -74,7 +77,16 @@ There are a few methods primarily intended for internal use, but which are still
 * `_remove_replace`
 * `_iter`
 * `_reviter`
-* `findrow`
+* `_findrow`
+
+## Internal attributes
+There are a few attributes primarily intended for internal use, but which are still accessible. You shouldn't use these.
+
+* `_first`: The "first" _node_, but not necessarily (due to `_forward`). Public API: use `d[0]` to access the first _element_ of a deque.
+* `_last`: The "last" _node_, but not necessarily (due to `_forward`). Public API: use `d[-1]` to access the last _element_ of a deque.
+* `_forward`: A flag indicating whether the deque view has been reversed. Public API: no.
+* `_length`: The length of the deque. Public API: use `len(d)`.
+* `_seen`: The set of deque IDs seen by the current top-level call (if any) to `str(d)` or `repr(d)`, tracked to avoid infinite mutual recursion, cleared after the call completes. Public API: no.
 
 ## Please
 When you need a deque in real code, use the standard [`collections.deque`](https://docs.python.org/3/library/collections.html#collections.deque), not this module. When you need features like vector arithmetic or matrix multiplication, use a library like [NumPy](http://www.numpy.org/) or [pandas](https://pandas.pydata.org/), not this module.
