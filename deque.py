@@ -1,4 +1,5 @@
 import multiprocessing as mp
+from reprlib import recursive_repr
 
 class DQ:
     '''
@@ -9,7 +10,6 @@ class DQ:
     A pure Python implementation of collections.deque,
     with added features.
     '''
-    _seen = set()
     def __init__(self, items=(), maxlen=None):
         '''
         Create a new deque with the optional given iterable
@@ -586,23 +586,7 @@ class DQ:
             None
         '''
         self._remove_replace('replace', old, new, count)
-    def __str__(self):
-        '''
-        Returns the string representation of the deque.
-        Can be evaluated with eval back into an equivalent deque.
-        Returns:
-            result (str): the deque as a string
-        '''
-        seen = self.__class__._seen
-        parent = not bool(seen)
-        if parent:
-            seen.add(id(self))
-        result = '{}([{}])'.format(type(self).__name__, ', '.join(f'{type(self).__name__}([...])'
-          if isinstance(item, type(self)) and (id(item) in seen or seen.add(id(item)))
-          else repr(item) for item in self))
-        if parent:
-            seen.clear()
-        return result
+    @recursive_repr(__qualname__ + '([...])')
     def __repr__(self):
         '''
         Returns the string representation of the deque.
@@ -610,7 +594,15 @@ class DQ:
         Returns:
             result (str): the deque as a string
         '''
-        return str(self)
+        return type(self).__name__ + '([' + ', '.join(map(repr, self)) + '])'
+    def __str__(self):
+        '''
+        Returns the string representation of the deque.
+        Can be evaluated with eval back into an equivalent deque.
+        Returns:
+            result (str): the deque as a string
+        '''
+        return repr(self)
     def _iter(self, current=None):
         '''
         Yields a Node for each item in the deque, from beginning (left) to end (right).
